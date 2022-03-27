@@ -235,14 +235,37 @@ fun Modifier.draggableStack(
             density.computeThreshold(a,b)
         }
     }
+
+    controller.threshold = thresholds(controller.center.x, controller.right.x)
     Modifier.pointerInput(Unit) {
         detectDragGestures(
             onDragEnd = {
-                when {
-                }
+                if(controller.offsetX.value <= 0f){
+//                        if (dra.x <= -velocityThresholdPx) {
+//                            controller.swipeLeft()
+//                        } else {
+                            if (controller.offsetX.value > -controller.threshold) controller.returnCenter()
+                            else controller.swipeLeft()
+                      //  }
+                    }else{
+//                        if (velocity.x >= velocityThresholdPx) {
+//                            controller.swipeRight()
+//                        } else {
+                            if (controller.offsetX.value < controller.threshold) controller.returnCenter()
+                            else controller.swipeRight()
+                       // }
+                    }
             },
             onDrag = { change, dragAmount ->
-
+                controller.scope.apply{
+                    launch{
+                        controller.offsetX.snapTo(controller.offsetX.value + dragAmount.x)
+                        controller.offsetY.snapTo(controller.offsetY.value + dragAmount.y)
+                        val targetRotation = normalize(controller.center.x, controller.right.x, abs(controller.offsetX.value), 0f, 10f)
+                        controller.rotation.snapTo(targetRotation * -controller.offsetX.value.sign)
+                        controller.scale.snapTo(normalize(controller.center.x, controller.right.x/3, abs(controller.offsetX.value), 0.8f))
+                    }
+                }
                 change.consumePositionChange()
             }
         )
