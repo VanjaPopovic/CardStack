@@ -1,5 +1,6 @@
 package io.github.davidec00.cardstack
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ fun CardStack(modifier : Modifier = Modifier,
               enableButtons: Boolean = false,
               onSwipeLeft : ( item : Item) -> Unit = {},
               onSwipeRight : ( item : Item) ->  Unit = {},
+              onSwipeTop :  ( item: Item ) -> Unit = {},
               onEmptyStack : ( lastItem : Item) -> Unit = {}
 ){
 
@@ -69,7 +71,11 @@ fun CardStack(modifier : Modifier = Modifier,
         onSwipeRight(items[i])
         i--
     }
-
+    cardStackController.onSwipeTop = {
+        onSwipeTop(items[i])
+        i--
+    }
+    val alpha: Float by animateFloatAsState(cardStackController.getRatio())
     ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
         val (buttons, stack) = createRefs()
 
@@ -125,8 +131,10 @@ fun CardStack(modifier : Modifier = Modifier,
                                 scaleY = if (index < i) cardStackController.scale.value else 1f
                         )
                         .shadow(4.dp, RoundedCornerShape(10.dp)),
-                        item
+                        item,
+                        topAlpha = alpha
                 )
+
             }
         }
     }
@@ -135,8 +143,11 @@ fun CardStack(modifier : Modifier = Modifier,
 @Composable
 fun Card(
         modifier: Modifier = Modifier,
-        item: Item = Item()
+        item: Item = Item(),
+        topAlpha: Float = 0.0f,
+        i : Int
 ){
+
     Box(
             modifier
     ){
@@ -164,6 +175,11 @@ fun Card(
                     color = Color.White,
                     fontSize = 20.sp,
                     modifier = Modifier.clickable(onClick = {}) // disable the highlight of the text when dragging
+            )
+            Box(
+                Modifier.fillMaxSize()
+                    .graphicsLayer(alpha = topAlpha)
+                    .background(Color.Red)
             )
         }
     }
