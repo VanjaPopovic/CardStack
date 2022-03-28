@@ -16,13 +16,23 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
+
+enum class Direction {
+    Left, Right, Top, Bottom;
+
+    companion object {
+        val HORIZONTAL: List<Direction> = listOf(Left, Right)
+        val VERTICAL: List<Direction> = listOf(Top, Bottom)
+        val FREEDOM: List<Direction> = listOf(Left, Right,Top,Bottom)
+    }
+}
 /**
  * Controller of the [draggableStack] modifier.
  *
@@ -98,6 +108,23 @@ open class CardStackController(
         }
         return min(ratio, 1.0f)
     }
+
+    open fun getDirection(): Direction {
+        return if (abs(offsetY.targetValue) < abs(offsetX.targetValue)) {
+            if (offsetX.targetValue < 0.0f) {
+                Direction.Left
+            } else {
+                Direction.Right
+            }
+        } else {
+            if (offsetY.targetValue < 0.0f) {
+                Direction.Top
+            } else {
+                Direction.Bottom
+            }
+        }
+    }
+
     fun swipeLeft() {
         scope.apply {
             launch {

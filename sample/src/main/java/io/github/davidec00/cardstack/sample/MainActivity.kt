@@ -3,12 +3,18 @@ package io.github.davidec00.cardstack.sample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import io.github.davidec00.cardstack.CardStack
 import io.github.davidec00.cardstack.Item
 
-class MainActivity : ComponentActivity(){
-//    @ExperimentalMaterialApi
+class MainActivity : ComponentActivity() {
+    //    @ExperimentalMaterialApi
     @OptIn(androidx.compose.material.ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val item1 = Item(
@@ -38,10 +44,46 @@ class MainActivity : ComponentActivity(){
             CardStack(
                 modifier = Modifier,
                 enableButtons = true,
-                items = items
+                items = items,
+                rightView = { RightOverlay() },
+                leftView = { LeftOverlay() },
+                topView = { TopOverlay() }
             )
         }
     }
+}
+
+@Composable
+fun RightOverlay(
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Green)
+    )
+
+}
+
+@Composable
+fun TopOverlay(
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Blue)
+    )
+
+}
+
+@Composable
+fun LeftOverlay(
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Red)
+    )
+
 }
 
 
