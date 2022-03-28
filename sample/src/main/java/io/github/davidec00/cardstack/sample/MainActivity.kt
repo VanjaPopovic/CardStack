@@ -4,17 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import io.github.davidec00.cardstack.CardStack
-import io.github.davidec00.cardstack.Item
+
 
 class MainActivity : ComponentActivity() {
-    //    @ExperimentalMaterialApi
     @OptIn(androidx.compose.material.ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val item1 = Item(
@@ -48,7 +58,10 @@ class MainActivity : ComponentActivity() {
                 rightView = { RightOverlay() },
                 leftView = { LeftOverlay() },
                 topView = { TopOverlay() }
-            )
+            ) { item: Item ->
+                Card(Modifier, item)
+
+            }
         }
     }
 }
@@ -86,7 +99,53 @@ fun LeftOverlay(
 
 }
 
+@Composable
+fun Card(
+    modifier: Modifier = Modifier,
+    item: Item = Item(),
+) {
 
+    Box(
+        modifier
+    ) {
+        if (item.url != null) {
+            AsyncImage(
+                model = item.url,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp)),
+            )
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(10.dp)
+        ) {
+            Text(
+                text = item.text,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp,
+                modifier = Modifier.clickable(onClick = {}) // disable the highlight of the text when dragging
+            )
+            Text(
+                text = item.subText,
+                color = Color.White,
+                fontSize = 20.sp,
+                modifier = Modifier.clickable(onClick = {}) // disable the highlight of the text when dragging
+            )
+
+        }
+    }
+}
+
+data class Item(
+    val url: String? = null,
+    val text: String = "",
+    val subText: String = ""
+)
 
 
 

@@ -60,7 +60,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-
+    implementation "io.coil-kt:coil-compose:2.0.0-rc02"
     implementation "com.google.android.material:material:1.5.0"
 
     implementation "androidx.core:core-ktx:1.7.0"

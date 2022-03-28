@@ -17,16 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 
 /**
@@ -45,19 +40,20 @@ import kotlin.math.roundToInt
  */
 @ExperimentalMaterialApi
 @Composable
-fun CardStack(
+inline fun <reified T> CardStack(
     modifier: Modifier = Modifier,
-    items: MutableList<Item>,
-    thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
+    items: MutableList<T>,
+    noinline thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
     velocityThreshold: Dp = 125.dp,
     enableButtons: Boolean = false,
-    onSwipeLeft: (item: Item) -> Unit = {},
-    onSwipeRight: (item: Item) -> Unit = {},
-    onSwipeTop: (item: Item) -> Unit = {},
-    onEmptyStack: (lastItem: Item) -> Unit = {},
-    topView: (@Composable () -> Unit)? = null,
-    rightView: (@Composable () -> Unit)? = null,
-    leftView: (@Composable () -> Unit)? = null
+    crossinline onSwipeLeft: (item: T) -> Unit = {},
+    crossinline onSwipeRight: (item: T) -> Unit = {},
+    crossinline onSwipeTop: (item: T) -> Unit = {},
+    onEmptyStack: (lastItem: T) -> Unit = {},
+    noinline topView: (@Composable () -> Unit)? = null,
+    noinline rightView: (@Composable () -> Unit)? = null,
+    noinline leftView: (@Composable () -> Unit)? = null,
+    crossinline renderItem: @Composable (T) -> Unit
 ) {
 
     var i by remember { mutableStateOf(items.size - 1) }
@@ -144,10 +140,11 @@ fun CardStack(
                         )
                         .shadow(4.dp, RoundedCornerShape(10.dp))
                 ) {
-                    Card(
-                        modifier = Modifier,
-                        item
-                    )
+//                    Card(
+//                        modifier = Modifier,
+//                        item
+//                    )
+                    renderItem(item)
                     if (rightView != null) {
                         Box(Modifier.graphicsLayer(alpha = alphaRight)) {
                             rightView()
@@ -173,53 +170,7 @@ fun CardStack(
     }
 }
 
-@Composable
-fun Card(
-    modifier: Modifier = Modifier,
-    item: Item = Item(),
-) {
 
-    Box(
-        modifier
-    ) {
-        if (item.url != null) {
-            AsyncImage(
-                model = item.url,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp)),
-            )
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(10.dp)
-        ) {
-            Text(
-                text = item.text,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
-                modifier = Modifier.clickable(onClick = {}) // disable the highlight of the text when dragging
-            )
-            Text(
-                text = item.subText,
-                color = Color.White,
-                fontSize = 20.sp,
-                modifier = Modifier.clickable(onClick = {}) // disable the highlight of the text when dragging
-            )
-
-        }
-    }
-}
-
-data class Item(
-    val url: String? = null,
-    val text: String = "",
-    val subText: String = ""
-)
 
 fun Modifier.moveTo(
     x: Float,
